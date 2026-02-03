@@ -3,15 +3,14 @@ import json
 import glob
 import copy
 import torch
-from typing import Optional, List
+from typing import Optional
 from transformers.models.qwen3.modeling_qwen3 import (
     Qwen3Config,
 )
 from transformers import AutoConfig
 from huggingface_hub import snapshot_download
 from safetensors import safe_open
-from loguru import logger
-from datasets import Dataset, load_dataset, Features, Sequence, Value
+from datasets import load_dataset, Features, Sequence, Value
 
 
 def build_target_layer_ids(num_target_layers: int, num_draft_layers: int):
@@ -130,56 +129,6 @@ def extract_context_feature(
         selected_states.append(hidden_states[layer_id + offset])
     target_hidden = torch.cat(selected_states, dim=-1)
     return target_hidden
-
-
-def prepare_dataset(data_paths: List[str]) -> Dataset:
-    instances = []
-    for data_path in data_paths:
-        with open(data_path) as fd:
-            data = json.load(fd)
-            instances.extend(data)
-    logger.info(f"Loaded {len(instances)} samples from {data_paths}.")
-    
-    normalized_instances = []
-    for instance in instances:
-        normalized_instances.append({"messages": instance})
-            
-    return Dataset.from_list(normalized_instances)
-
-
-def process_batch(examples, tokenizer, max_length):
-    batch_input_ids = []
-    batch_valid_indices = []
-
-    for messages in examples["messages"]:
-        input_ids = tokenizer.apply_chat_template(messages, tokenize=True, return_tensors="pt", enable_thinking=False)[0]        
-        prompt_ids = tokenizer.apply_chat_template(
-            messages[:1], 
-            tokenize=True, 
-            add_generation_prompt=True,
-            enable_thinking=False,
-            return_tensors="pt"
-        )[0]
-        
-        prompt_len = prompt_ids.shape[0]
-        assistant_mask = torch.zeros_like(input_ids, dtype=torch.bool)
-        assistant_mask[prompt_len:] = True
-
-        if input_ids.shape[0] > max_length:
-            input_ids = input_ids[:max_length]
-            assistant_mask = assistant_mask[:max_length]
-
-        seq_len = input_ids.shape[0]
-        valid_indices = torch.nonzero(assistant_mask, as_tuple=True)[0]
-        valid_indices = valid_indices[valid_indices + 1 < seq_len]
-
-        batch_input_ids.append(input_ids)
-        batch_valid_indices.append(valid_indices)
-
-    return {
-        "input_ids": batch_input_ids,
-        "valid_indices": batch_valid_indices,
-    }
 
 
 def process_batch_with_padding(examples, tokenizer, max_length, block_size=16):

@@ -5,12 +5,10 @@ from typing import Any, Dict, List, Optional
 
 import torch
 import transformers
-from dflash.train.data.specforge import data
-from dflash.train.data.specforge import data
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, HfArgumentParser, Trainer
 from model import DFlashDraftModel, make_draft_config, freeze_embedding_lm_head, load_embed_lm_head
-from model import JointDistillModel
+from model import JointModel
 from deepspeed.runtime.zero.stage3 import GatheredParameters
 from datasets import load_from_disk
 
@@ -147,7 +145,7 @@ def main() -> None:
     load_embed_lm_head(draft_model, args.model_name_or_path)
     logger.info(f"Selected target hidden state layer ids: {draft_model.aux}")
 
-    model = JointDistillModel(
+    model = JointModel(
         draft_model=draft_model,
         target_model=target_model,
         block_size=args.block_size
