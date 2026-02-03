@@ -32,7 +32,7 @@ for task in "${TASKS[@]}"; do
     --model-name-or-path Qwen/Qwen3-4B \
     --draft-name-or-path z-lab/Qwen3-4B-DFlash-b16 \
     --max-new-tokens 2048 \
-    --temperature 1.0 \
+    --temperature 0.0 \
     2>&1 | tee "logs/${DATASET_NAME}.log"
 
 done
