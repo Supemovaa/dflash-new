@@ -17,7 +17,6 @@ from transformers.models.qwen3.modeling_qwen3 import (
 )
 from transformers.modeling_outputs import CausalLMOutputWithPast
 from transformers.cache_utils import Cache
-from .utils import build_target_layer_ids
 
 def apply_rotary_pos_emb(q, k, cos, sin, position_ids=None, unsqueeze_dim=1):
     cos = cos.unsqueeze(unsqueeze_dim)

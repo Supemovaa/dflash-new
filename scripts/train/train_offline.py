@@ -9,7 +9,7 @@ from loguru import logger
 from torch import nn
 from torch.nn.attention.flex_attention import create_block_mask
 from transformers import AutoTokenizer, HfArgumentParser, Trainer
-from model import DFlashDraftModel, make_draft_config, freeze_embedding_lm_head, load_embed_lm_head
+from dflash.model import DFlashDraftModel, make_draft_config, freeze_embedding_lm_head, load_embed_lm_head
 from torch.utils.data import Dataset
 
 @dataclass

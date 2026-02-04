@@ -4,7 +4,6 @@ from typing import List, Optional
 
 import torch
 import torch.distributed as dist
-import torch.nn as nn
 from sglang.srt.configs.model_config import ModelConfig
 from sglang.srt.managers.schedule_batch import Req, ScheduleBatch
 from sglang.srt.managers.scheduler import Scheduler
@@ -16,8 +15,7 @@ from sglang.srt.server_args import ServerArgs
 from sglang.srt.speculative.spec_info import SpeculativeAlgorithm
 from sglang.srt.utils import require_mlp_sync, require_mlp_tp_gather
 
-from specforge.distributed import get_tp_device_mesh, get_tp_group
-from specforge.utils import padding
+from dflash.specforge.distributed import get_tp_group
 
 from .sglang_backend import SGLangRunner, wrap_eagle3_logits_processors_in_module
 from .sglang_backend.utils import LogitsProcessorForEAGLE3

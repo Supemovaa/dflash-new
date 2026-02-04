@@ -5,7 +5,7 @@ import torch
 import torch.distributed as dist
 from yunchang.globals import PROCESS_GROUP, set_seq_parallel_pg
 
-from specforge.utils import print_with_rank
+from dflash.specforge.utils import print_with_rank
 
 _DEVICE_MESH = None
 _TP_DEVICE_MESH = None

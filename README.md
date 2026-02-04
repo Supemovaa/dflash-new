@@ -60,14 +60,14 @@ python -m sglang.launch_server \
 
 #### Installation
 ```bash
-conda create -n dflash python=3.11
+conda create -n dflash python=3.11 -y
 conda activate dflash
 
 git clone https://github.com/z-lab/dflash.git
 cd dflash
 
-pip install -r requirements.txt
-pip install flash-attn --no-build-isolation
+pip install uv
+uv pip install -r requirements.txt -e .
 ```
 
 #### Example Usage

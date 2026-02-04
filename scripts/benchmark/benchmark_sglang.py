@@ -11,7 +11,7 @@ from typing import Optional
 import requests
 import torch
 from transformers import AutoTokenizer
-from model import load_and_process_dataset
+from dflash.model import load_and_process_dataset
 
 from sglang.srt.environ import envs
 from sglang.srt.utils import get_device_sm, kill_process_tree

@@ -11,18 +11,17 @@ from tqdm import tqdm
 from transformers import AutoConfig
 from datasets import load_from_disk
 
-from specforge.args import SGLangBackendArgs
-from specforge.data import prepare_dp_dataloaders
-from specforge.distributed import (
+from dflash.specforge.args import SGLangBackendArgs
+from dflash.specforge.distributed import (
     destroy_distributed,
     get_dp_group,
     get_tp_group,
     init_distributed,
     is_tp_rank_0,
 )
-from specforge.modeling.target import get_eagle3_target_model
-from specforge.utils import print_with_rank, rank_0_priority
-from train.model.utils import build_target_layer_ids
+from dflash.specforge.modeling.target import get_eagle3_target_model
+from dflash.specforge.utils import print_with_rank, rank_0_priority, prepare_dp_dataloaders
+from dflash.model.utils import build_target_layer_ids
 
 
 @dataclass

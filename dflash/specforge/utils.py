@@ -1,9 +1,83 @@
 from typing import Any, Dict, List, Optional
+import json
+import logging
+from contextlib import contextmanager
+import os
+from random import random
+import random
 import torch
 import torch.distributed as dist
+from transformers import AutoTokenizer, PretrainedConfig
 from datasets import Dataset
 from torch.utils.data import DataLoader, DistributedSampler
-from specforge.distributed import get_draft_sp_group
+from dflash.specforge.distributed import get_draft_sp_group
+
+logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def rank_0_priority():
+    rank = dist.get_rank()
+
+    if rank == 0:
+        yield
+        dist.barrier()
+    else:
+        dist.barrier()
+        yield
+
+
+@contextmanager
+def default_torch_dtype(dtype: torch.dtype):
+    current_dtype = torch.get_default_dtype()
+    torch.set_default_dtype(dtype)
+    yield
+    torch.set_default_dtype(current_dtype)
+
+
+@torch.no_grad()
+def padding(tensor, left=True):
+    zeropadding = torch.zeros_like(tensor[:, -1:])
+    if left:
+        tensor = torch.cat((zeropadding, tensor[:, :-1]), dim=1)
+    else:
+        tensor = torch.cat((tensor[:, 1:], zeropadding), dim=1)
+    return tensor
+
+
+def load_config_from_file(config_path: str):
+    with open(config_path, "r") as f:
+        config = json.load(f)
+
+    return PretrainedConfig.from_dict(config)
+
+
+def print_with_rank(message):
+    if dist.is_available() and dist.is_initialized():
+        logger.info(f"rank {dist.get_rank()}: {message}")
+    else:
+        logger.info(f"non-distributed: {message}")
+
+
+def print_args_with_dots(args):
+    if dist.get_rank() == 0:
+        args_dict = vars(args)
+        max_key_length = max(len(key) for key in args_dict.keys())
+        total_width = 50
+
+        print("\n -----------【args】-----------")
+        for key, value in args_dict.items():
+            key_str = f"{key:<{max_key_length}}"
+            value_str = str(value)
+            dot_count = total_width - len(key_str) - len(value_str)
+            dot_fill = "·" * dot_count
+            print(f"{key_str} {dot_fill} {value_str}")
+
+
+def print_on_rank0(message):
+    if dist.get_rank() == 0:
+        logger.info(message)
+
 
 class DataCollatorWithPadding:
     """
@@ -50,21 +124,6 @@ class DataCollatorWithPadding:
         return outtensors
 
     def __call__(self, features: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Collate a batch of features.
-
-        Args:
-            features: A list of features, where each feature is a dictionary containing:
-                - input_ids: torch.Tensor of shape (n,)
-                - attention_mask: torch.Tensor of shape (n,)
-                - loss_mask: torch.Tensor of shape (n,)
-
-        Returns:
-            A dictionary containing:
-                - input_ids: torch.Tensor of shape (B, N)
-                - attention_mask: torch.Tensor of shape (B, N)
-                - loss_mask: torch.Tensor of shape (B, N)
-        """
         max_length = max(item["input_ids"].shape[1] for item in features)
         # pad for sequence parrel
         max_length = (
@@ -112,26 +171,10 @@ def prepare_dp_dataloaders(
     process_group: Optional[dist.ProcessGroup] = None,
     pin_memory: Optional[bool] = False,
     shuffle: Optional[bool] = False,
-    is_vlm: Optional[bool] = False,
     prefetch_factor: Optional[int] = 2,
     **dataloader_kwargs
 ) -> DataLoader:
-    """
-    Prepare dataloader for distributed data parallel training.
 
-    Args:
-        dataset: The dataset to load data from.
-        batch_size: The batch size for each GPU.
-        num_workers: The number of workers for data loading.
-        process_group: The process group for distributed training.
-        pin_memory: Whether to pin memory for data loading.
-        shuffle: Whether to shuffle the dataset.
-        is_vlm: Whether the dataset is a vision-language model dataset.
-        **dataloader_kwargs: Additional keyword arguments for the DataLoader.
-
-    Returns:
-        A DataLoader for the dataset.
-    """
     world_size = dist.get_world_size(process_group)
     rank = dist.get_rank(process_group)
     sampler = DistributedSampler(

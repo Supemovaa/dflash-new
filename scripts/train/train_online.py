@@ -7,8 +7,7 @@ import torch
 import transformers
 from loguru import logger
 from transformers import AutoModelForCausalLM, AutoTokenizer, HfArgumentParser, Trainer
-from model import DFlashDraftModel, make_draft_config, freeze_embedding_lm_head, load_embed_lm_head
-from model import JointModel
+from dflash.model import DFlashDraftModel, JointModel, make_draft_config, freeze_embedding_lm_head, load_embed_lm_head
 from deepspeed.runtime.zero.stage3 import GatheredParameters
 from datasets import load_from_disk
 
