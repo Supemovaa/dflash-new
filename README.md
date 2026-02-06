@@ -45,7 +45,9 @@ cd dflash
 pip install uv
 uv pip install -r requirements.txt
 
-# Optionally install flash-attn. If unavailable, evaluation falls back to torch.sdpa in the Transformers backend. The measured speedup will be slower, but the acceptance length remains comparable.
+# Optionally install flash-attn.
+# If unavailable, evaluation falls back to torch.sdpa in the Transformers backend.
+# The measured speedup will be slower, but the acceptance length remains comparable.
 
 # uv pip install flash-attn --no-build-isolation
 ```
