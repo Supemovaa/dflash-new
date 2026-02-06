@@ -136,14 +136,16 @@ bash run_benchmark.sh
 </div>
 
 ## **Citation**
-If you find DFlash useful for your research or applications, please cite our project. The full paper is coming soon!
+If you find DFlash useful for your research or applications, please cite our project.
 
 ```bibtex
-@article{chen2026dflash,
-  title   = {DFlash: Block Diffusion for Flash Speculative Decoding},
-  author  = {Chen, Jian and Liu, Zhijian},
-  journal = {arXiv preprint},
-  year    = {2026},
-  url     = {[https://github.com/z-lab/dflash](https://github.com/z-lab/dflash)},
-  note    = {Paper coming soon}
+@misc{chen2026dflash,
+  title         = {DFlash: Block Diffusion for Flash Speculative Decoding},
+  author        = {Chen, Jian and Liang, Yesheng and Liu, Zhijian},
+  year          = {2026},
+  eprint        = {2602.06036},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2602.06036}
 }
+```
