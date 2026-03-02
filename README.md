@@ -145,13 +145,10 @@ Huge thanks to [@dcw02](https://github.com/dcw02), [@gongy](https://github.com/g
 If you find DFlash useful for your research or applications, please cite our project.
 
 ```bibtex
-@misc{chen2026dflash,
-  title         = {DFlash: Block Diffusion for Flash Speculative Decoding},
-  author        = {Chen, Jian and Liang, Yesheng and Liu, Zhijian},
-  year          = {2026},
-  eprint        = {2602.06036},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.CL},
-  url           = {https://arxiv.org/abs/2602.06036}
+@article{chen2026dflash,
+  title   = {{DFlash: Block Diffusion for Flash Speculative Decoding}},
+  author  = {Chen, Jian and Liang, Yesheng and Liu, Zhijian},
+  journal = {arXiv preprint arXiv:2602.06036},
+  year    = {2026}
 }
 ```
