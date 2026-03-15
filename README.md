@@ -15,10 +15,11 @@ https://github.com/user-attachments/assets/5b29cabb-eb95-44c9-8ffe-367c0758de8c
 ## 📦 Model Support Plan
 
 ### ✅ Supported
-- **Qwen3.5-4B** (Preview): https://huggingface.co/z-lab/Qwen3.5-4B-DFlash
-- **Qwen3.5-9B** (Preview): https://huggingface.co/z-lab/Qwen3.5-9B-DFlash
-- **Qwen3.5-35B-A3B** (Preview): https://huggingface.co/z-lab/Qwen3.5-35B-A3B-DFlash
-- **Qwen3-Coder-Next** (Preview): https://huggingface.co/z-lab/Qwen3-Coder-Next-DFlash
+- **Qwen3.5-4B**: https://huggingface.co/z-lab/Qwen3.5-4B-DFlash
+- **Qwen3.5-9B**: https://huggingface.co/z-lab/Qwen3.5-9B-DFlash
+- **Qwen3.5-27B** (preview): https://huggingface.co/z-lab/Qwen3.5-27B-DFlash
+- **Qwen3.5-35B-A3B**: https://huggingface.co/z-lab/Qwen3.5-35B-A3B-DFlash
+- **Qwen3-Coder-Next**: https://huggingface.co/z-lab/Qwen3-Coder-Next-DFlash
 - **gpt-oss-20b**: https://huggingface.co/z-lab/gpt-oss-20b-DFlash
 - **gpt-oss-120b**: https://huggingface.co/z-lab/gpt-oss-120b-DFlash
 - **Qwen3-4B**: https://huggingface.co/z-lab/Qwen3-4B-DFlash-b16  
@@ -27,7 +28,6 @@ https://github.com/user-attachments/assets/5b29cabb-eb95-44c9-8ffe-367c0758de8c
 - **Llama-3.1-8B-Instruct**: https://huggingface.co/z-lab/LLaMA3.1-8B-Instruct-DFlash-UltraChat
 
 ### 🚧 Coming Soon
-- **Qwen3.5-27B**
 - **Qwen3.5-122B-A10B**
 - **GLM-4.7-Flash**
 
@@ -72,8 +72,12 @@ python -m sglang.launch_server \
     --trust-remote-code
 ```
 
-### Transformers
+### vLLM
 
+Community-contributed support is available. See PRs [#36847](https://github.com/vllm-project/vllm/pull/36847) and [#36767](https://github.com/vllm-project/vllm/pull/36767) for details.
+
+### Transformers
+Only Qwen3 and LLaMA-3.1 models support Transformers backend.
 ```python
 from transformers import AutoModel, AutoModelForCausalLM, AutoTokenizer
 
@@ -125,16 +129,7 @@ bash run_benchmark.sh
 
 To run benchmark on SGLang:
 ```bash
-export SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1
-
-python benchmark_sglang.py \
-  --target-model Qwen/Qwen3-8B \
-  --draft-model z-lab/Qwen3-8B-DFlash-b16 \
-  --concurrencies 1,4,8,16,32 \
-  --dataset-name math500 \
-  --attention-backends fa3,flashinfer \
-  --tp-size 1 \
-  --output-md sglang_results.md
+bash run_sglang_benchmark.sh
 ```
 
 <div align="center">
@@ -146,7 +141,7 @@ python benchmark_sglang.py \
 Huge thanks to [@dcw02](https://github.com/dcw02), [@gongy](https://github.com/gongy), and the other folks at [@modal-labs](https://github.com/modal-labs) for the fast, high-quality support in bringing DFlash into SGLang—making it possible to truly accelerate LLM serving in real-world deployments.
 
 ## **Citation**
-If you find DFlash useful for your research or applications, please cite our project.
+If you find DFlash useful, please cite our work. To share feedback on DFlash or request new model support, please fill out this form: [DFlash Feedback](https://forms.gle/4YNwfqb4nJdqn6hq9).
 
 ```bibtex
 @article{chen2026dflash,
